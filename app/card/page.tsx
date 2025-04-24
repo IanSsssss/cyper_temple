@@ -6,7 +6,7 @@ import { CardBody, CardContainer, CardItem } from "./card";
 import buddhaList from "./constance";
 import {SubmitButton} from "./submitButton";
 import {useSearchParams} from 'next/navigation'
-import { ShimmerButton } from "../../components/magicui/shimmer-button";
+import { ShimmerButton } from "./shimmer-button";
 
 import WishList from "./wishList"
 declare const window: {ethereum: {
