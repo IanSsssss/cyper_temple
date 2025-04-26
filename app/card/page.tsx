@@ -75,7 +75,7 @@ function BuddhaCard() {
                 <SubmitButton />) : (    
                 <ShimmerButton className="shadow-2xl" onClick={Wall} >
                         <span className="whitespace-pre-wrap text-center text-sm font-xs leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
-                        试试连接 MetaMask
+                        connect wallet
                         </span>
                 </ShimmerButton>
             )}
