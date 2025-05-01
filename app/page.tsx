@@ -9,7 +9,7 @@ export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
     return (
-      <div>
+      <div >
         <Header walletAddress={walletAddress} setWalletAddress={setWalletAddress} />
         <BackgroundLines className="flex items-center justify-center w-full flex-col px-4" />
         <div>

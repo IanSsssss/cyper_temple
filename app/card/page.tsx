@@ -6,7 +6,7 @@ import { CardBody, CardContainer, CardItem } from "./card";
 import buddhaList from "./constance";
 import {SubmitButton} from "./submitButton";
 import {useSearchParams} from 'next/navigation'
-import { ShimmerButton } from "./shimmer-button";
+import { Header } from "../header";
 
 import WishList from "./wishList"
 declare const window: {ethereum: {
@@ -70,26 +70,18 @@ function BuddhaCard() {
           <div className="fixed top-20 right-20 p-4">
           <WishList />
           </div>
-          <div className="fixed top-0 right-14 p-4">
-            {walletAddress ? (
-                <SubmitButton />) : (    
-                <ShimmerButton className="shadow-2xl" onClick={Wall} >
-                        <span className="whitespace-pre-wrap text-center text-sm font-xs leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
-                        connect wallet
-                        </span>
-                </ShimmerButton>
-            )}
-
-          </div>
         </div>
     );
 }
 
 // 在页面中包裹 BuddhaCard 组件，并加上 Suspense 边界
 export default function Page() {
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <BuddhaCard />
+        <Header walletAddress={walletAddress} setWalletAddress={setWalletAddress} />
+        <BuddhaCard />
         </Suspense>
     );
 }
