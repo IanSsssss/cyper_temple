@@ -4,6 +4,7 @@ import {useState} from 'react';
 import {BackgroundLines} from './welcome';
 import Thumb from './card/thumb';
 import {Header} from './header'
+import {CreateGodModal} from './createGod'
 
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
@@ -11,10 +12,14 @@ export default function Home() {
     return (
       <div >
         <Header walletAddress={walletAddress} setWalletAddress={setWalletAddress} />
-        <BackgroundLines className="flex items-center justify-center w-full flex-col px-4" />
+          <BackgroundLines className="flex items-center justify-center w-full flex-col px-4" />
         <div>
-        <Thumb />
+          <Thumb />
         </div>
+        <div className="flex justify-center">
+        <CreateGodModal />
+        </div>
+
       </div>
 
     );
