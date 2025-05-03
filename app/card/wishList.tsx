@@ -4,7 +4,7 @@ import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useEffect, useState } from 'react';
 import type { ComponentPropsWithoutRef } from "react"
-import { getMessages, MsgStruct } from '../eth';
+import { getMessages, MsgStruct } from '../contract';
 
 const ReviewCard = ({
   address,
@@ -76,40 +76,38 @@ export default function WishList() {
   )
 }
 
-
-
 interface MarqueeProps extends ComponentPropsWithoutRef<"div"> {
   /**
    * Optional CSS class name to apply custom styles
    */
-  className?: string
+  className?: string;
   /**
    * Whether to reverse the animation direction
    * @default false
    */
-  reverse?: boolean
+  reverse?: boolean;
   /**
    * Whether to pause the animation on hover
    * @default false
    */
-  pauseOnHover?: boolean
+  pauseOnHover?: boolean;
   /**
    * Content to be displayed in the marquee
    */
-  children: React.ReactNode
+  children: React.ReactNode;
   /**
    * Whether to animate vertically instead of horizontally
    * @default false
    */
-  vertical?: boolean
+  vertical?: boolean;
   /**
    * Number of times to repeat the content
    * @default 4
    */
-  repeat?: number
+  repeat?: number;
 }
-
-function Marquee({
+ 
+export function Marquee({
   className,
   reverse = false,
   pauseOnHover = false,
@@ -146,9 +144,8 @@ function Marquee({
           </div>
         ))}
     </div>
-  )
+  );
 }
-
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));

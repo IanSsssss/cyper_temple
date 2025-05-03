@@ -19,8 +19,6 @@ contract CyperTemple {
         uint128 prayerCount;
     }
 
-    uint16 godNum;
-
     God[] public GodsList;
 
     mapping(uint16 => Prayer[]) public PrayerMap;
@@ -33,15 +31,14 @@ contract CyperTemple {
         // 文殊
         GodsList.push(God("Manjushri Bodhisattva", "Wisdom sword-bearer, slicing through ignorance.","1", "Sharpen mind, cut delusion, awaken", 2,0));
         // 耶稣
-        GodsList.push(God("Jesus Christ", "Son of God, redeeming souls with divine love.","1", "Love all, trust God, gain eternal life", 3,0));
+        // GodsList.push(God("Jesus Christ", "Son of God, redeeming souls with divine love.","1", "Love all, trust God, gain eternal life", 3,0));
         // 不动明王
-        GodsList.push(God("Acala", "Fiery Wisdom King, guarding Dharma with wrath","1", "Fear my flames, conquer evil, rise", 4,0));
+        GodsList.push(God("Acala", "Fiery Wisdom King, guarding Dharma with wrath","1", "Fear my flames, conquer evil, rise", 3,0));
         // 克苏鲁
-        GodsList.push(God("Cthulhu", "Great Old One, dreaming in R\u0060lyeh\u0060s depths.","1", "Know chaos, embrace the abyss.", 5,0));
+        GodsList.push(God("Cthulhu", "Great Old One, dreaming in R\u0060lyeh\u0060s depths.","1", "Know chaos, embrace the abyss.", 4,0));
         // 奈亚拉托提普
-        GodsList.push(God("Nyarlathotep", "Crawling Chaos, whispering madness in shadows","1", "Heed my whispers, embrace insanity.", 6,0));
+        // GodsList.push(God("Nyarlathotep", "Crawling Chaos, whispering madness in shadows","1", "Heed my whispers, embrace insanity.", 6,0));
 
-        godNum = 7;
     }
 
     event NewMsgSubmit(string content, string nickname, address sender, uint16 godId);
@@ -60,13 +57,12 @@ contract CyperTemple {
     }
 
     function createGod(string memory godName, string memory desc, string memory imgUrl, string memory subDesc) public {
-        godNum += 1;
         GodsList.push(God(
             godName,
             desc,
             imgUrl,
             subDesc,
-            godNum,
+            uint16(GodsList.length),
             0
         ));
     }

@@ -12,7 +12,7 @@ import React, {
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { AnimatePresence, MotionConfig, Variants, motion } from "motion/react"
-import { submitMessage } from "../eth";
+import { submitMessage } from "../contract";
 
 const TRANSITION = {
   type: "spring",
