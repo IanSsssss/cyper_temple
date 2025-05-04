@@ -1,13 +1,11 @@
 "use client";
 
-import { ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import Link from 'next/link'
-import { getGodsList,GodStruct } from "../contract";
+import Link from "next/link";
+import { getGodsList, GodStruct } from "../contract";
+import { cn } from "../../lib/utils";
 
 export default function Thumb() {
   const [godsList, setGodsList] = useState<GodStruct[]>([]);
@@ -20,30 +18,27 @@ export default function Thumb() {
     fetchGodsList();
   }, []);
 
-    return (
-        <div className="flex flex-wrap justify-center items-center gap-4">
-            {godsList.map((item) => (            
-                <Link
-                className="w-1/2 lg:w-1/3 p-4"
-                key={item.id}
-                href={{
-                    pathname: `/card`,
-                    query: {data: JSON.stringify(item)},
-                }}>
-                <button key={item.id}  className="w-1/2 lg:w-1/3 p-4" >
-                    <Card imageUrl={item.imgUrl} >
-                    <p className="font-bold text-xl">{item.name}</p>
-                    <p className="font-normal text-sm">{item.desc}</p>
-                    </Card>
-                </button>
-            </Link>
-            ))}
-        </div>        
-    );
-}
-
-function cn(...inputs: ClassValue[]) {
-    return twMerge(clsx(inputs));
+  return (
+    <div className="flex flex-wrap justify-center items-center gap-4">
+      {godsList.map((item) => (
+        <Link
+          className="w-1/2 lg:w-1/3 p-4"
+          key={item.id}
+          href={{
+            pathname: `/card`,
+            query: { data: JSON.stringify(item) },
+          }}
+        >
+          <button key={item.id} className="w-1/2 lg:w-1/3 p-4">
+            <Card imageUrl={item.imgUrl}>
+              <p className="font-bold text-xl">{item.name}</p>
+              <p className="font-normal text-sm">{item.desc}</p>
+            </Card>
+          </button>
+        </Link>
+      ))}
+    </div>
+  );
 }
 
 const Card = ({
@@ -71,7 +66,7 @@ const Card = ({
     if (!ref.current) return;
 
     const direction = getDirection(event, ref.current);
-    console.log("direction", direction);
+
     switch (direction) {
       case 0:
         setDirection("top");

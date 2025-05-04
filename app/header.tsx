@@ -1,8 +1,8 @@
-'use client';
+"use client";
 import { ShimmerButton } from "./card/shimmer-button";
 import { AnimatePresence, motion, MotionProps } from "motion/react";
 import { useEffect, useState } from "react";
-
+import { CreateGodModal } from "./createGod";
 import { cn } from "@/lib/utils";
 
 declare const window: {
@@ -21,30 +21,41 @@ export const Header = function ({
   setWalletAddress: (address: string | null) => void;
 }) {
   const wall = async (setWalletAddress: (address: string | null) => void) => {
-    if (typeof window.ethereum === 'undefined') {
-      alert('请先安装 MetaMask 插件，请安装后刷新页面，并确保 MetaMask 已连接到本地链');
+    if (typeof window.ethereum === "undefined") {
+      alert(
+        "请先安装 MetaMask 插件，请安装后刷新页面，并确保 MetaMask 已连接到本地链"
+      );
       return;
     }
     try {
-      const accounts = await window.ethereum.request({
-        method: 'eth_requestAccounts',
-      }) as string[];
-      sessionStorage.setItem('walletAddress', accounts[0]);
+      const accounts = (await window.ethereum.request({
+        method: "eth_requestAccounts",
+      })) as string[];
+      sessionStorage.setItem("walletAddress", accounts[0]);
       setWalletAddress(accounts[0]);
     } catch (error) {
       console.log(error);
-      alert('MetaMask连接失败');
+      alert("MetaMask连接失败");
     }
   };
 
   return (
     <header className="bg-gray-20 flex justify-between items-center p-2 border-b border-gray-300">
-      <div className="font-semibold text-xl bg-clip-text px-16 py-2"> 🙏🏻 Cyper Temple</div>
-      {sessionStorage.getItem('walletAddress') ? (
-            <WordRotate
-            className="text-xl text-black dark:text-white px-24"
-            words={["Vistor", `0x...${sessionStorage.getItem('walletAddress')?.slice(38)}`]}
+      <div className="font-semibold text-xl bg-clip-text px-16 py-2">
+        {" "}
+        🙏🏻 Cyper Temple
+      </div>
+      {sessionStorage.getItem("walletAddress") ? (
+        <div className="flex gap-0.5">
+          <WordRotate
+            className="text-xl text-black dark:text-white px-12"
+            words={[
+              "Vistor",
+              `0x...${sessionStorage.getItem("walletAddress")?.slice(38)}`,
+            ]}
           />
+          <CreateGodModal />
+        </div>
       ) : (
         <ShimmerButton
           className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg shadow-2xl hover:from-blue-600 hover:to-purple-700 transition-all cursor-pointer z-10"

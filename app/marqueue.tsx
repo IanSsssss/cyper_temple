@@ -1,10 +1,10 @@
 "use client";
 import type React from "react";
-import { ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { ComponentPropsWithoutRef } from "react";
+
+import { cn } from "../lib/utils";
 import { useEffect, useState } from "react";
-import type { ComponentPropsWithoutRef } from "react";
-import { getPrayerList, MsgStruct } from "../contract";
+import { getPrayerList, MsgStruct } from "./contract";
 
 const ReviewCard = ({
   address,
@@ -52,19 +52,12 @@ const ReviewCard = ({
   );
 };
 
-export default function WishList() {
-  const [messages, setMessages] = useState<MsgStruct[]>([
-    {
-      text: "Hello, World!",
-      address: "0x...001",
-      nickname: "User1",
-      time: 1693459818,
-    },
-  ]);
+export default function ParyerMarqueue() {
+  const [messages, setMessages] = useState<MsgStruct[]>([]);
 
   useEffect(() => {
     async function loadMessages() {
-      const ledgerMeesage = await getPrayerList();
+      const ledgerMeesage = await getPrayerList(0);
       setMessages(ledgerMeesage);
     }
     loadMessages();
@@ -74,19 +67,19 @@ export default function WishList() {
   const secondRow = messages.slice(messages.length / 2);
 
   return (
-    <div className="relative flex h-[500px] w-full flex-row items-center justify-center overflow-hidden">
-      <Marquee pauseOnHover vertical className="[--duration:20s]">
+    <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
+      <Marquee pauseOnHover className="[--duration:20s]">
         {firstRow.map((msg) => (
           <ReviewCard key={msg.time} {...msg} />
         ))}
       </Marquee>
-      <Marquee reverse pauseOnHover vertical className="[--duration:20s]">
+      <Marquee reverse pauseOnHover className="[--duration:20s]">
         {secondRow.map((msg) => (
           <ReviewCard key={msg.time} {...msg} />
         ))}
       </Marquee>
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b from-background"></div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-background"></div>
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background"></div>
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background"></div>
     </div>
   );
 }
@@ -122,7 +115,7 @@ interface MarqueeProps extends ComponentPropsWithoutRef<"div"> {
   repeat?: number;
 }
 
-export function Marquee({
+function Marquee({
   className,
   reverse = false,
   pauseOnHover = false,
@@ -160,8 +153,4 @@ export function Marquee({
         ))}
     </div>
   );
-}
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
 }
