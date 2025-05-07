@@ -1,24 +1,24 @@
 "use client";
 import { useState } from "react";
+import {createGod} from './contract';
 
 export function CreateGodModal() {
   const [showModal, setShowModal] = useState(false);
 
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [desc, setDesc] = useState("");
   const [imageUrl, setImageUrl] = useState("");
-  const [note, setNote] = useState("");
+  const [subDesc, setSubDesc] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !description || !imageUrl) {
+    if (!name || !desc || !imageUrl) {
       alert("神明名称、介绍、图片不能为空！");
       return;
     }
 
     // TODO: 提交逻辑在此实现
-    console.log({ name, description, imageUrl, note });
-    alert("提交成功（实际逻辑待实现）");
+    createGod({ name, desc, imageUrl, subDesc });
     setShowModal(false);
   };
 
@@ -55,8 +55,8 @@ export function CreateGodModal() {
               <div>
                 <label className="block font-medium">神明介绍*</label>
                 <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  value={desc}
+                  onChange={(e) => setDesc(e.target.value)}
                   className="w-full border px-3 py-2 rounded"
                   required
                 />
@@ -73,8 +73,8 @@ export function CreateGodModal() {
               <div>
                 <label className="block font-medium">补充说明（可选）</label>
                 <input
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
+                  value={subDesc}
+                  onChange={(e) => setSubDesc(e.target.value)}
                   className="w-full border px-3 py-2 rounded"
                 />
               </div>

@@ -146,17 +146,25 @@ export async function getGodsList(): Promise<GodStruct[]> {
   return result;
 }
 
+export async function createGod(param: {name:string,desc: string, imageUrl: string, subDesc: string }):Promise<any> {
+	if (!param.name || !param.desc){
+		throw new Error("MetaMask not detected. Please install MetaMask.");
+	}
+
+	await contract.createGod(param.name, param.desc, param.imageUrl, param.subDesc);
+	return;
+}
+
 function imgUrlMap(god: any[]): string {
-  if (god[4] < 5) {
+  if (god[4] < 6) {
     return [
       "/rulai.png",
       "/puxian.jpg",
       "/wenshu.jpg",
       "/budongmingwang.jpg",
       "/cthulhu.png",
+	  "/jesus.png"
     ][god[4]];
   }
   return god[2];
 }
-
-console.log(getGodsList());
