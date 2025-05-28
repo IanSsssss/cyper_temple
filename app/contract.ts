@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-const contractData = require("../artifacts/contracts/CyperTemple.sol/CyperTemple.json");
+import contractData from "../artifacts/contracts/CyperTemple.sol/CyperTemple.json" assert { type: "json" };
 
 export interface MsgStruct {
   text: string;
@@ -41,7 +41,6 @@ const contract = new ethers.Contract(contractAddress, contractABI, wallet);
 export async function getPrayerList(id: number): Promise<MsgStruct[]> {
   try {
     const messages: string[] = await contract.getPrayerList(id);
-
     const mockData = [
       {
         text: "ขอให้พระพุทธเจ้าคุ้มครองให้ฉันมีความสุขและปลอดภัยตลอดปีนี้  ",
@@ -107,24 +106,24 @@ export async function getPrayerList(id: number): Promise<MsgStruct[]> {
   }
 }
 
-export async function submitMessage(text: string, nickname: string) {
+export async function submitMessage(text: string, nickname: string, godId: string) {
   try {
     if (!window.ethereum) {
       throw new Error("MetaMask not detected. Please install MetaMask.");
     }
 
-    //   const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-    //   if (accounts.length === 0) {
-    // 	throw new Error("No accounts available in MetaMask.");
-    //   }
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      if (accounts.length === 0) {
+    	throw new Error("No accounts available in MetaMask.");
+      }
 
-    //   const provider = new ethers.BrowserProvider(window.ethereum);
-    //   const signer = await provider.getSigner();
-    //   const contract = new ethers.Contract(contractAddress, contractABI, signer);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-    // const tx = await contract.submit(text, nickname);
-    // await tx.wait();  // 等待交易确认
-    // console.log("Message submitted successfully:", tx);
+    const tx = await contract.submit(text, nickname, godId);
+    await tx.wait();  // 等待交易确认
+    console.log("Message submitted successfully:" ,text, nickname);
   } catch (error) {
     console.error("Error:", error);
   }
@@ -132,9 +131,9 @@ export async function submitMessage(text: string, nickname: string) {
 
 export async function getGodsList(): Promise<GodStruct[]> {
   const gods = await contract.godList();
-  let result = [];
-  for (let god of gods) {
-    let imgUrl = imgUrlMap(god);
+  const result = [];
+  for (const god of gods) {
+    const imgUrl = imgUrlMap(god);
     result.push({
       id: god[4],
       name: god[0],
@@ -146,7 +145,7 @@ export async function getGodsList(): Promise<GodStruct[]> {
   return result;
 }
 
-export async function createGod(param: {name:string,desc: string, imageUrl: string, subDesc: string }):Promise<any> {
+export async function createGod(param: {name:string,desc: string, imageUrl: string, subDesc: string }) {
 	if (!param.name || !param.desc){
 		throw new Error("MetaMask not detected. Please install MetaMask.");
 	}
@@ -155,7 +154,7 @@ export async function createGod(param: {name:string,desc: string, imageUrl: stri
 	return;
 }
 
-function imgUrlMap(god: any[]): string {
+function imgUrlMap(god: number[]): string {
   if (god[4] < 6) {
     return [
       "/rulai.png",
@@ -166,5 +165,5 @@ function imgUrlMap(god: any[]): string {
 	  "/jesus.png"
     ][god[4]];
   }
-  return god[2];
+  return god[2] as unknown as string;
 }

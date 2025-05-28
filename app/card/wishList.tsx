@@ -64,7 +64,7 @@ export default function WishList() {
 
   useEffect(() => {
     async function loadMessages() {
-      const ledgerMeesage = await getPrayerList();
+      const ledgerMeesage = await getPrayerList(1);
       setMessages(ledgerMeesage);
     }
     loadMessages();

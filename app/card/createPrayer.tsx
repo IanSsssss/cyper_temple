@@ -1,23 +1,21 @@
 "use client";
 import { useState } from "react";
-import {createGod} from './contract';
+import {submitMessage} from '../contract';
 
-export function CreateGodModal() {
+export function CreatePrayerModal({id}:{id: string}) {
   const [showModal, setShowModal] = useState(false);
 
-  const [name, setName] = useState("");
-  const [desc, setDesc] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [subDesc, setSubDesc] = useState("");
+  const [nickname, setName] = useState("");
+  const [text, setDesc] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !desc || !imageUrl) {
-      alert("神明名称、介绍、图片不能为空！");
+    if (!nickname || !text) {
+      alert("Invalid Parameter！");
       return;
     }
 
-    createGod({ name, desc, imageUrl, subDesc });
+    submitMessage(text, nickname, id);
     setShowModal(false);
   };
 
@@ -27,7 +25,7 @@ export function CreateGodModal() {
         onClick={() => setShowModal(true)}
         className="ml-8 shadow-[0_4px_14px_0_rgb(0,0,0,10%)] hover:shadow-[0_6px_20px_rgba(93,93,93,23%)] px-8 py-2 bg-[#fff] text-[#696969] rounded-md font-light transition duration-200 ease-linear"
       >
-        🧞Create God
+       📜 Create Prayer
       </button>
 
       {showModal && (
@@ -40,41 +38,24 @@ export function CreateGodModal() {
 
           {/* 弹窗内容 */}
           <div className="relative bg-white p-6 rounded-lg z-10 w-full max-w-md shadow-xl">
-            <h2 className="text-lg font-semibold mb-4">创建新的神明</h2>
+            <h2 className="text-lg font-semibold mb-4">Create your preayer</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block font-medium">神明名称*</label>
+                <label className="block font-medium">Type your name*</label>
                 <input
-                  value={name}
+                  value={nickname}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full border px-3 py-2 rounded"
                   required
                 />
               </div>
               <div>
-                <label className="block font-medium">神明介绍*</label>
+                <label className="block font-medium">Tell god what you want*</label>
                 <textarea
-                  value={desc}
+                  value={text}
                   onChange={(e) => setDesc(e.target.value)}
                   className="w-full border px-3 py-2 rounded"
                   required
-                />
-              </div>
-              <div>
-                <label className="block font-medium">神明图片 URL*</label>
-                <input
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="w-full border px-3 py-2 rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block font-medium">补充说明（可选）</label>
-                <input
-                  value={subDesc}
-                  onChange={(e) => setSubDesc(e.target.value)}
-                  className="w-full border px-3 py-2 rounded"
                 />
               </div>
 
@@ -84,13 +65,13 @@ export function CreateGodModal() {
                   onClick={() => setShowModal(false)}
                   className="text-gray-600 hover:text-black"
                 >
-                  关闭
+                  Close
                 </button>
                 <button
                   type="submit"
                   className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
                 >
-                  提交
+                  Submit
                 </button>
               </div>
             </form>

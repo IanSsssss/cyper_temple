@@ -4,7 +4,6 @@ import { useState } from "react";
 import { BackgroundLines } from "./welcome";
 import Thumb from "./card/thumb";
 import { Header } from "./header";
-import { CreateGodModal } from "./createGod";
 import ParyerMarqueue from "./marqueue";
 
 export default function Home() {
@@ -23,5 +22,6 @@ export default function Home() {
       <div className="h-4 " />
       <ParyerMarqueue />
     </div>
+    
   );
 }

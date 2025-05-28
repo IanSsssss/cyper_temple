@@ -2,16 +2,20 @@
 import { ShimmerButton } from "./card/shimmer-button";
 import { AnimatePresence, motion, MotionProps } from "motion/react";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { CreateGodModal } from "./createGod";
+import { CreatePrayerModal } from "./card/createPrayer";
 import { cn } from "@/lib/utils";
 
-declare const window: {
-  ethereum: {
-    isMetaMask?: boolean;
-    request: (args: { method: string }) => Promise<string[]>;
-    enable?: () => Promise<string[]>;
-  };
-};
+declare global {
+  interface Window {
+    ethereum?: {
+      isMetaMask?: boolean;
+      request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
+      enable?: () => Promise<string[]>;
+    };
+  }
+}
 
 export const Header = function ({
   walletAddress,
@@ -20,18 +24,36 @@ export const Header = function ({
   walletAddress: string | null;
   setWalletAddress: (address: string | null) => void;
 }) {
-  const wall = async (setWalletAddress: (address: string | null) => void) => {
+  const [storedAddress, setStoredAddress] = useState<string | null>(null);
+  let url = '';
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      url = (window as Window).location.href;
+      setStoredAddress(sessionStorage.getItem('walletAddress'));
+    }
+  }, []);
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (walletAddress) {
+        sessionStorage.setItem('walletAddress', walletAddress);
+      } else {
+        sessionStorage.removeItem('walletAddress');
+      }
+    }
+  }, [walletAddress]);
+  
+  const isHome = usePathname() == '/';
+
+  const wall = async () => {
     if (typeof window.ethereum === "undefined") {
-      alert(
-        "请先安装 MetaMask 插件，请安装后刷新页面，并确保 MetaMask 已连接到本地链"
-      );
+      alert("请先安装 MetaMask 插件，请安装后刷新页面，并确保 MetaMask 已连接到本地链");
       return;
     }
     try {
       const accounts = (await window.ethereum.request({
         method: "eth_requestAccounts",
       })) as string[];
-      sessionStorage.setItem("walletAddress", accounts[0]);
       setWalletAddress(accounts[0]);
     } catch (error) {
       console.log(error);
@@ -45,23 +67,21 @@ export const Header = function ({
         {" "}
         🙏🏻 Cyper Temple
       </div>
-      {sessionStorage.getItem("walletAddress") ? (
+      {storedAddress || walletAddress ? (
         <div className="flex gap-0.5">
           <WordRotate
             className="text-xl text-black dark:text-white px-12"
             words={[
               "Vistor",
-              `0x...${sessionStorage.getItem("walletAddress")?.slice(38)}`,
+              `0x...${(storedAddress || walletAddress)?.slice(38)}`,
             ]}
           />
-          <CreateGodModal />
+          {isHome ? <CreateGodModal /> : <CreatePrayerModal id={getGodId(url)} />}
         </div>
       ) : (
         <ShimmerButton
           className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg shadow-2xl hover:from-blue-600 hover:to-purple-700 transition-all cursor-pointer z-10"
-          onClick={() => {
-            wall(setWalletAddress);
-          }}
+          onClick={wall}
         >
           <span className="text-sm font-medium">Connect Wallet</span>
         </ShimmerButton>
@@ -95,7 +115,6 @@ function WordRotate({
       setIndex((prevIndex) => (prevIndex + 1) % words.length);
     }, duration);
 
-    // Clean up interval on unmount
     return () => clearInterval(interval);
   }, [words, duration]);
 
@@ -112,4 +131,10 @@ function WordRotate({
       </AnimatePresence>
     </div>
   );
+}
+
+function getGodId(url:string) {
+  if (url.indexOf('card') < 1) return '';
+
+  return url.split('%3A')[1].split('%2C')[0]
 }
