@@ -2,7 +2,7 @@
 import { ShimmerButton } from "./card/shimmer-button";
 import { AnimatePresence, motion, MotionProps } from "motion/react";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams} from "next/navigation";
 import { CreateGodModal } from "./createGod";
 import { CreatePrayerModal } from "./card/createPrayer";
 import { cn } from "@/lib/utils";
@@ -44,6 +44,7 @@ export const Header = function ({
   }, [walletAddress]);
   
   const isHome = usePathname() == '/';
+  const [godId, godName] = getGodIdAndName(useSearchParams().toString());
 
   const wall = async () => {
     if (typeof window.ethereum === "undefined") {
@@ -76,7 +77,7 @@ export const Header = function ({
               `0x...${(storedAddress || walletAddress)?.slice(38)}`,
             ]}
           />
-          {isHome ? <CreateGodModal /> : <CreatePrayerModal id={getGodId(url)} />}
+          {isHome ? <CreateGodModal /> : <CreatePrayerModal id={godId} godName={godName} />}
         </div>
       ) : (
         <ShimmerButton
@@ -133,8 +134,8 @@ function WordRotate({
   );
 }
 
-function getGodId(url:string) {
-  if (url.indexOf('card') < 1) return '';
+function getGodIdAndName(url:string) {
+  if (url.indexOf('data') < 0) return ['', ''];
 
-  return url.split('%3A')[1].split('%2C')[0]
+  return [url.split('%3A')[1].split('%2C')[0], url.split('%3A')[2].split('%2C')[0].replace(/%22/g, '').replace('+', ' ')]
 }

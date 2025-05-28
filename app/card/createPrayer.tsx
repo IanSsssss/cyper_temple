@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
-import {submitMessage} from '../contract';
+import {TalkToGeminiGod} from '../../lib/utils'
+// import {submitMessage} from '../contract';
 
-export function CreatePrayerModal({id}:{id: string}) {
+export function CreatePrayerModal({id, godName}:{id: string, godName: string}) {
   const [showModal, setShowModal] = useState(false);
 
   const [nickname, setName] = useState("");
@@ -15,8 +16,9 @@ export function CreatePrayerModal({id}:{id: string}) {
       return;
     }
 
-    submitMessage(text, nickname, id);
-    setShowModal(false);
+    // submitMessage(text, nickname, id);
+    // setShowModal(false);
+    TalkToGeminiGod(nickname, text, godName);
   };
 
   return (
