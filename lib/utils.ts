@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export async function TalkToGeminiGod(name:string, text: string, godName: string) {
+export async function TalkToGeminiGod(name:string, text: string, godName: string):Promise<string> {
   const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCFvOPqnriIpnKvOVZiaQMXumKvtU1V0eI';
   const data = {
     contents: [
@@ -22,8 +22,10 @@ export async function TalkToGeminiGod(name:string, text: string, godName: string
 
   try {
     const response = await axios.post(url, data);
-    console.log('🎶 ' + JSON.stringify(response.data));
+    console.log('🎶 ' + response.data.candidates[0].content.parts[0].text);
+    return response.data.candidates[0].content.parts[0].text;
   } catch (error) {
     console.error('Error fetching data:', error);
+    return '';
   }
 }
