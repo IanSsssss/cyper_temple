@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable prefer-const */
 import { useState } from "react";
 import {TalkToGeminiGod} from '../../lib/utils'
 import {submitMessage} from '../contract';

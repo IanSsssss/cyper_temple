@@ -112,17 +112,17 @@ export async function submitMessage(text: string, nickname: string, godId: strin
       throw new Error("MetaMask not detected. Please install MetaMask.");
     }
 
-    //   const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-    //   if (accounts.length === 0) {
-    // 	throw new Error("No accounts available in MetaMask.");
-    //   }
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      if (accounts.length === 0) {
+    	throw new Error("No accounts available in MetaMask.");
+      }
 
-    //   const provider = new ethers.providers.Web3Provider(window.ethereum);
-    //   const signer = await provider.getSigner();
-    //   const contract = new ethers.Contract(contractAddress, contractABI, signer);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-    // const tx = await contract.submit(text, nickname, godId);
-    // await tx.wait();  // 等待交易确认
+    const tx = await contract.submit(text, nickname, godId);
+    await tx.wait();  // 等待交易确认
     console.log("Message submitted successfully:" ,text, nickname);
   } catch (error) {
     console.error("Error:", error);

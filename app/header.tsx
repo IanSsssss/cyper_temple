@@ -1,3 +1,4 @@
+// app/header.tsx
 "use client";
 import { ShimmerButton } from "./card/shimmer-button";
 import { AnimatePresence, motion, MotionProps } from "motion/react";
@@ -25,10 +26,8 @@ export const Header = function ({
   setWalletAddress: (address: string | null) => void;
 }) {
   const [storedAddress, setStoredAddress] = useState<string | null>(null);
-  let url = '';
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      url = (window as Window).location.href;
       setStoredAddress(sessionStorage.getItem('walletAddress'));
     }
   }, []);

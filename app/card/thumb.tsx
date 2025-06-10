@@ -4,11 +4,16 @@ import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { getGodsList, GodStruct } from "../contract";
+import { getGodsList, GodStruct, createGod } from "../contract";
 import { cn } from "../../lib/utils";
 
 export default function Thumb() {
   const [godsList, setGodsList] = useState<GodStruct[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [name, setName] = useState("");
+  const [desc, setDesc] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [subDesc, setSubDesc] = useState("");
 
   useEffect(() => {
     async function fetchGodsList() {
@@ -17,6 +22,22 @@ export default function Thumb() {
     }
     fetchGodsList();
   }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !desc || !imageUrl) {
+      alert("神明名称、介绍、图片不能为空！");
+      return;
+    }
+
+    createGod({ name, desc, imageUrl, subDesc });
+    setShowModal(false);
+
+    setName("");
+    setDesc("");
+    setImageUrl("");
+    setSubDesc("");
+  };
 
   return (
     <div className="flex flex-wrap justify-center items-center gap-4">
@@ -37,6 +58,79 @@ export default function Thumb() {
           </button>
         </Link>
       ))}
+      <div className="w-1/2 lg:w-1/3 p-4">
+        <button onClick={() => setShowModal(true)}>
+          <Card imageUrl="/new.png">
+            <p className="font-bold text-xl">Create Your God</p>
+            <p className="font-normal text-sm">Click to create your god</p>
+          </Card>
+        </button>
+      </div>
+
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black opacity-50"
+            onClick={() => setShowModal(false)}
+          />
+          <div className="relative bg-white p-6 rounded-lg z-10 w-full max-w-md shadow-xl">
+            <h2 className="text-lg font-semibold mb-4">Create Your God</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block font-medium">God name*</label>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full border px-3 py-2 rounded"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-medium">add description*</label>
+                <textarea
+                  value={desc}
+                  onChange={(e) => setDesc(e.target.value)}
+                  className="w-full border px-3 py-2 rounded"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-medium">Post your god photo*</label>
+                <input
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="w-full border px-3 py-2 rounded"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-medium">Extra description</label>
+                <input
+                  value={subDesc}
+                  onChange={(e) => setSubDesc(e.target.value)}
+                  className="w-full border px-3 py-2 rounded"
+                />
+              </div>
+
+              <div className="flex justify-end gap-4 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="text-gray-600 hover:text-black"
+                >
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
