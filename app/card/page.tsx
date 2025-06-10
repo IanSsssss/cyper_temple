@@ -5,10 +5,10 @@ import { Suspense, useState, useMemo } from "react";
 import { CardBody, CardContainer, CardItem } from "./card";
 import { useSearchParams } from "next/navigation";
 import { Header } from "../header";
+import {WishList} from "./wishlistV2";
+import { FloatingPanelInput } from "./button";
 
-import WishList from "./wishList";
-
-function BuddhaCard() {
+function GodCard() {
   const searchParams = useSearchParams();
   const dataParam = searchParams.get("data");
 
@@ -55,14 +55,18 @@ function BuddhaCard() {
           </div>
         </CardBody>
       </CardContainer>
-      <div className="fixed top-20 right-20 p-4">
-        <WishList />
+      <div className="w-100 h-screen relative">
+        <div className="fixed top-0 right-32">
+        <div className="absolute bottom-36 left-72 w-80"> 
+          <FloatingPanelInput />
+          </div>
+          <WishList />
+        </div>
       </div>
     </div>
   );
 }
 
-// 在页面中包裹 BuddhaCard 组件，并加上 Suspense 边界
 export default function Page() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
@@ -72,7 +76,7 @@ export default function Page() {
         walletAddress={walletAddress}
         setWalletAddress={setWalletAddress}
       />
-      <BuddhaCard />
+      <GodCard />
     </Suspense>
   );
 }
