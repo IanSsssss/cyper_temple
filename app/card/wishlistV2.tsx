@@ -29,7 +29,7 @@ const CardStack = ({
   }, [items]);
 
   useEffect(() => {
-    let interval: any;
+    let interval: NodeJS.Timeout;
     const startFlipping = () => {
       interval = setInterval(() => {
         setCards((prevCards: Card[]) => {

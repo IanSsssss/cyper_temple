@@ -44,39 +44,6 @@ function useFloatingPanel() {
   return context
 }
 
-function useFloatingPanelLogic() {
-  const uniqueId = useId()
-  const [isOpen, setIsOpen] = useState(false)
-  const [note, setNote] = useState("")
-  const [author, setAuthor] = useState("")
-  const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null)
-  const [title, setTitle] = useState("")
-
-  const openFloatingPanel = (rect: DOMRect) => {
-    setTriggerRect(rect)
-    setIsOpen(true)
-  }
-  const closeFloatingPanel = () => {
-    setIsOpen(false)
-    setNote("")
-    setAuthor("")
-  }
-
-  return {
-    isOpen,
-    openFloatingPanel,
-    closeFloatingPanel,
-    uniqueId,
-    note,
-    setNote,
-    author,
-    setAuthor,
-    triggerRect,
-    title,
-    setTitle,
-  }
-}
-
 interface FloatingPanelRootProps {
   children: React.ReactNode
   className?: string
@@ -258,8 +225,6 @@ interface FloatingPanelFormProps {
 }
 
 function FloatingPanelForm({ children, onSubmit, className }: FloatingPanelFormProps) {
-  const { note, closeFloatingPanel } = useFloatingPanel()
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     onSubmit?.(e)
@@ -397,7 +362,7 @@ export function SubmitPrayer({ godId , godName}: { godId: string, godName: strin
   const [title, setTitle] = useState("")
   const [showMiracleModal, setShowMiracleModal] = useState(false)
   const [prayerText, setPrayerText] = useState("")
-  let [godResponse, setGodResponse] = useState("")
+  const [godResponse, setGodResponse] = useState("")
 
   const handleClick = () => {
     const walletAddress = sessionStorage.getItem('walletAddress')
@@ -422,8 +387,7 @@ export function SubmitPrayer({ godId , godName}: { godId: string, godName: strin
     try {
       await submitMessage(prayer, author, godId)
       setPrayerText(prayer)
-      godResponse = await TalkToGeminiGod(author, prayer, godName);
-      setGodResponse(godResponse) 
+      setGodResponse(await TalkToGeminiGod(author, prayer, godName)) 
       setIsOpen(false)
       setShowMiracleModal(true)
     } catch (error) {
