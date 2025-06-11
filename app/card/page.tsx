@@ -58,7 +58,7 @@ function GodCard() {
       <div className="w-100 h-screen relative">
         <div className="fixed top-0 right-32">
         <div className="absolute bottom-36 left-72 w-80"> 
-          <SubmitPrayer godId={godData.id} />
+          <SubmitPrayer godId={godData.id} godName={godData.name} />
           </div>
           <WishList />
         </div>

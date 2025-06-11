@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { getPrayerList, MsgStruct } from "../contract";
 
 type Card = {
-  id: string;
+  id: number;
   name: string;
   designation: string;
   content: string;
@@ -21,10 +21,11 @@ const CardStack = ({
 }) => {
   const CARD_OFFSET = offset || 10;
   const SCALE_FACTOR = scaleFactor || 0.06;
-  const [cards, setCards] = useState<Card[]>(items);
+  const MAX_VISIBLE_CARDS = 5;
+  const [cards, setCards] = useState<Card[]>(items.slice(0, MAX_VISIBLE_CARDS));
 
   useEffect(() => {
-    setCards(items);
+    setCards(items.slice(0, MAX_VISIBLE_CARDS));
   }, [items]);
 
   useEffect(() => {
@@ -32,9 +33,10 @@ const CardStack = ({
     const startFlipping = () => {
       interval = setInterval(() => {
         setCards((prevCards: Card[]) => {
-          const newArray = [...prevCards];
-          newArray.unshift(newArray.pop()!);
-          return newArray;
+          const currentCards = [...prevCards];
+          const lastCard = currentCards.pop()!;
+          currentCards.unshift(lastCard);
+          return currentCards;
         });
       }, 5000);
     };
@@ -46,6 +48,10 @@ const CardStack = ({
   return (
     <div className="relative h-60 w-60 md:h-60 md:w-96">
       {cards.map((card, index) => {
+        const scale = 1 - index * SCALE_FACTOR;
+        const opacity = 1 - (index * 0.2);
+        const zIndex = MAX_VISIBLE_CARDS - index;
+
         return (
           <motion.div
             key={card.id}
@@ -55,8 +61,14 @@ const CardStack = ({
             }}
             animate={{
               top: index * -CARD_OFFSET,
-              scale: 1 - index * SCALE_FACTOR,
-              zIndex: cards.length - index,
+              scale: scale,
+              opacity: opacity,
+              zIndex: zIndex,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
             }}
           >
             <div className="font-normal text-neutral-700 dark:text-neutral-200">
@@ -90,7 +102,6 @@ export function WishList() {
     useEffect(() => {
         async function loadMessages() {
           const ledgerMeesage = await getPrayerList(1);
-
           const mappedMessages = ledgerMeesage.map(msg => ({
             text: msg.text,
             address: msg.address,
@@ -101,9 +112,9 @@ export function WishList() {
         }
         loadMessages();
       }, []);
- 
+
     const CARDS = messages.map((msg) => ({
-        id: msg.address+msg.text,
+        id: msg.time,
         name: msg.nickname,
         designation: msg.address,
         content: msg.text,

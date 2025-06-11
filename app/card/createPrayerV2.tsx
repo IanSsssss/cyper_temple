@@ -10,7 +10,7 @@ import React, {
 } from "react"
 import { ArrowLeftIcon } from "lucide-react"
 import { AnimatePresence, MotionConfig, motion } from "motion/react"
-import { cn } from "@/lib/utils"
+import { cn, TalkToGeminiGod } from "@/lib/utils"
 import { submitMessage } from "../contract"
 import { MiracleModal } from "./term"
 
@@ -389,7 +389,7 @@ function FloatingPanelSubmitButton({ className }: FloatingPanelSubmitButtonProps
   )
 }
 
-export function SubmitPrayer({ godId }: { godId: string }) {
+export function SubmitPrayer({ godId , godName}: { godId: string, godName: string }) {
   const [isOpen, setIsOpen] = useState(false)
   const [note, setNote] = useState("")
   const [author, setAuthor] = useState("")
@@ -397,7 +397,7 @@ export function SubmitPrayer({ godId }: { godId: string }) {
   const [title, setTitle] = useState("")
   const [showMiracleModal, setShowMiracleModal] = useState(false)
   const [prayerText, setPrayerText] = useState("")
-  const [godResponse, setGodResponse] = useState("")
+  let [godResponse, setGodResponse] = useState("")
 
   const handleClick = () => {
     const walletAddress = sessionStorage.getItem('walletAddress')
@@ -422,7 +422,8 @@ export function SubmitPrayer({ godId }: { godId: string }) {
     try {
       await submitMessage(prayer, author, godId)
       setPrayerText(prayer)
-      setGodResponse("神明已收到你的祈祷...") // 这里可以根据实际情况设置响应内容
+      godResponse = await TalkToGeminiGod(author, prayer, godName);
+      setGodResponse(godResponse) 
       setIsOpen(false)
       setShowMiracleModal(true)
     } catch (error) {
@@ -483,10 +484,18 @@ export function SubmitPrayer({ godId }: { godId: string }) {
         </FloatingPanelContent>
       </FloatingPanelRoot>
       {showMiracleModal && (
-        <MiracleModal
-          text={prayerText}
-          godResponse={godResponse}
-        />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowMiracleModal(false)} />
+          <div className="relative bg-transparent p-6 rounded-lg w-[70%]">
+            <MiracleModal text={prayerText} godResponse={godResponse} />
+            <button
+              className="mt-4 bg-black-500 text-white px-4 py-2 rounded"
+              onClick={() => setShowMiracleModal(false)}
+            >
+              关闭
+            </button>
+          </div>
+        </div>
       )}
     </>
   )
