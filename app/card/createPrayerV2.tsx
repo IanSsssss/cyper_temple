@@ -257,25 +257,6 @@ function FloatingPanelLabel({ children, htmlFor, className }: FloatingPanelLabel
   )
 }
 
-interface FloatingPanelTextareaProps {
-  className?: string
-  id?: string
-}
-
-function FloatingPanelTextarea({ className, id }: FloatingPanelTextareaProps) {
-  const { note, setNote } = useFloatingPanel()
-
-  return (
-    <textarea
-      id={id}
-      className={cn("h-full w-full resize-none rounded-md bg-transparent px-4 py-3 text-sm outline-none", className)}
-      autoFocus
-      value={note}
-      onChange={(e) => setNote(e.target.value)}
-    />
-  )
-}
-
 interface FloatingPanelBodyProps {
   children: React.ReactNode
   className?: string
@@ -392,7 +373,7 @@ export function SubmitPrayer({ godId , godName}: { godId: string, godName: strin
       setShowMiracleModal(true)
     } catch (error) {
       console.error("Submit failed:", error)
-      alert("提交失败！")
+      alert("Submit failed")
     }
   }
 
@@ -456,7 +437,7 @@ export function SubmitPrayer({ godId , godName}: { godId: string, godName: strin
               className="mt-4 bg-black-500 text-white px-4 py-2 rounded"
               onClick={() => setShowMiracleModal(false)}
             >
-              关闭
+              Close
             </button>
           </div>
         </div>
