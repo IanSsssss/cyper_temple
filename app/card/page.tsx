@@ -6,7 +6,7 @@ import { CardBody, CardContainer, CardItem } from "./card";
 import { useSearchParams } from "next/navigation";
 import { Header } from "../header";
 import {WishList} from "./wishlistV2";
-import { FloatingPanelInput } from "./button";
+import { SubmitPrayer } from "./createPrayerV2";
 
 function GodCard() {
   const searchParams = useSearchParams();
@@ -58,7 +58,7 @@ function GodCard() {
       <div className="w-100 h-screen relative">
         <div className="fixed top-0 right-32">
         <div className="absolute bottom-36 left-72 w-80"> 
-          <FloatingPanelInput />
+          <SubmitPrayer godId={godData.id} />
           </div>
           <WishList />
         </div>

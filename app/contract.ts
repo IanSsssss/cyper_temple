@@ -41,6 +41,7 @@ const contract = new ethers.Contract(contractAddress, contractABI, wallet);
 export async function getPrayerList(id: number): Promise<MsgStruct[]> {
   try {
     const messages: string[] = await contract.getPrayerList(id);
+    
     const mockData = [
       {
         text: "ขอให้พระพุทธเจ้าคุ้มครองให้ฉันมีความสุขและปลอดภัยตลอดปีนี้  ",

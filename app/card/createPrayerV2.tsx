@@ -11,6 +11,8 @@ import React, {
 import { ArrowLeftIcon } from "lucide-react"
 import { AnimatePresence, MotionConfig, motion } from "motion/react"
 import { cn } from "@/lib/utils"
+import { submitMessage } from "../contract"
+import { MiracleModal } from "./term"
 
 const TRANSITION = {
   type: "spring",
@@ -78,13 +80,60 @@ function useFloatingPanelLogic() {
 interface FloatingPanelRootProps {
   children: React.ReactNode
   className?: string
+  isOpen: boolean
+  setIsOpen: (isOpen: boolean) => void
+  note: string
+  setNote: (note: string) => void
+  author: string
+  setAuthor: (author: string) => void
+  triggerRect: DOMRect | null
+  setTriggerRect: (rect: DOMRect | null) => void
+  title: string
+  setTitle: (title: string) => void
 }
 
-function FloatingPanelRoot({ children, className }: FloatingPanelRootProps) {
-  const floatingPanelLogic = useFloatingPanelLogic()
+function FloatingPanelRoot({ 
+  children, 
+  className,
+  isOpen,
+  setIsOpen,
+  note,
+  setNote,
+  author,
+  setAuthor,
+  triggerRect,
+  setTriggerRect,
+  title,
+  setTitle
+}: FloatingPanelRootProps) {
+  const uniqueId = useId()
+  const openFloatingPanel = (rect: DOMRect) => {
+    setTriggerRect(rect)
+    setIsOpen(true)
+  }
+
+  const closeFloatingPanel = () => {
+    setIsOpen(false)
+    setNote("")
+    setAuthor("")
+  }
+
+  const value = {
+    isOpen,
+    openFloatingPanel,
+    closeFloatingPanel,
+    note,
+    setNote,
+    author,
+    setAuthor,
+    triggerRect,
+    title,
+    setTitle,
+    uniqueId
+  }
 
   return (
-    <FloatingPanelContext.Provider value={floatingPanelLogic}>
+    <FloatingPanelContext.Provider value={value}>
       <MotionConfig transition={TRANSITION}>
         <div className={cn("relative", className)}>{children}</div>
       </MotionConfig>
@@ -96,9 +145,10 @@ interface FloatingPanelTriggerProps {
   children: React.ReactNode
   className?: string
   title: string
+  onClick?: () => void
 }
 
-function FloatingPanelTrigger({ children, className, title }: FloatingPanelTriggerProps) {
+function FloatingPanelTrigger({ children, className, title, onClick }: FloatingPanelTriggerProps) {
   const { openFloatingPanel, uniqueId, setTitle } = useFloatingPanel()
   const triggerRef = useRef<HTMLButtonElement>(null)
 
@@ -107,6 +157,7 @@ function FloatingPanelTrigger({ children, className, title }: FloatingPanelTrigg
       openFloatingPanel(triggerRef.current.getBoundingClientRect())
       setTitle(title)
     }
+    onClick?.()
   }
 
   return (
@@ -333,59 +384,110 @@ function FloatingPanelSubmitButton({ className }: FloatingPanelSubmitButtonProps
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      Submit Prayer
+      Submit
     </motion.button>
   )
 }
 
-export function FloatingPanelInput() {
-  const handleSubmit = (e: React.FormEvent) => {
+export function SubmitPrayer({ godId }: { godId: string }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [note, setNote] = useState("")
+  const [author, setAuthor] = useState("")
+  const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null)
+  const [title, setTitle] = useState("")
+  const [showMiracleModal, setShowMiracleModal] = useState(false)
+  const [prayerText, setPrayerText] = useState("")
+  const [godResponse, setGodResponse] = useState("")
+
+  const handleClick = () => {
+    const walletAddress = sessionStorage.getItem('walletAddress')
+    if (!walletAddress) {
+      alert('请先登录钱包！')
+      return
+    }
+    setIsOpen(true)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Submitted prayer:", {
-      author: (e.target as HTMLFormElement).author?.value,
-      prayer: (e.target as HTMLFormElement).prayer?.value
-    })
+    const form = e.target as HTMLFormElement
+    const author = form.author?.value
+    const prayer = form.prayer?.value
+
+    if (!author || !prayer) {
+      alert("作者和祈祷内容不能为空！")
+      return
+    }
+
+    try {
+      await submitMessage(prayer, author, godId)
+      setPrayerText(prayer)
+      setGodResponse("神明已收到你的祈祷...") // 这里可以根据实际情况设置响应内容
+      setIsOpen(false)
+      setShowMiracleModal(true)
+    } catch (error) {
+      console.error("Submit failed:", error)
+      alert("提交失败！")
+    }
   }
 
   return (
-    <FloatingPanelRoot>
-      <FloatingPanelTrigger
-        title="Add Prayer"
-        className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+    <>
+      <FloatingPanelRoot
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        note={note}
+        setNote={setNote}
+        author={author}
+        setAuthor={setAuthor}
+        triggerRect={triggerRect}
+        setTriggerRect={setTriggerRect}
+        title={title}
+        setTitle={setTitle}
       >
-        <span>Add Prayer</span>
-      </FloatingPanelTrigger>
-      <FloatingPanelContent className="w-[480px]">
-        <FloatingPanelForm onSubmit={handleSubmit}>
-          <FloatingPanelBody>
-            <div className="space-y-2">
-              <div>
-                <FloatingPanelLabel htmlFor="author-input">Author</FloatingPanelLabel>
-                <input
-                  id="author-input"
-                  name="author"
-                  className="w-full px-3 py-1.5 rounded-md bg-transparent border border-zinc-950/10 text-sm outline-none dark:border-zinc-50/10"
-                  placeholder="Enter author name"
-                />
+        <FloatingPanelTrigger
+          title="Add Prayer"
+          className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+          onClick={handleClick}
+        >
+          <span>Add Prayer</span>
+        </FloatingPanelTrigger>
+        <FloatingPanelContent className="w-[480px]">
+          <FloatingPanelForm onSubmit={handleSubmit}>
+            <FloatingPanelBody>
+              <div className="space-y-2">
+                <div>
+                  <FloatingPanelLabel htmlFor="author-input">Author</FloatingPanelLabel>
+                  <input
+                    id="author-input"
+                    name="author"
+                    className="w-full px-3 py-1.5 rounded-md bg-transparent border border-zinc-950/10 text-sm outline-none dark:border-zinc-50/10"
+                    placeholder="Enter author name"
+                  />
+                </div>
+                <div>
+                  <FloatingPanelLabel htmlFor="note-input">Prayer</FloatingPanelLabel>
+                  <textarea
+                    id="note-input"
+                    name="prayer"
+                    className="w-full min-h-[35px] px-3 py-1.5 rounded-md bg-transparent border border-zinc-950/10 text-sm outline-none dark:border-zinc-50/10 resize-none"
+                  />
+                </div>
               </div>
-              <div>
-                <FloatingPanelLabel htmlFor="note-input">Prayer</FloatingPanelLabel>
-                <textarea
-                  id="note-input"
-                  name="prayer"
-                  className="w-full min-h-[35px] px-3 py-1.5 rounded-md bg-transparent border border-zinc-950/10 text-sm outline-none dark:border-zinc-50/10 resize-none"
-                />
-              </div>
-            </div>
-          </FloatingPanelBody>
-          <FloatingPanelFooter>
-            <FloatingPanelCloseButton />
-            <FloatingPanelSubmitButton />
-          </FloatingPanelFooter>
-        </FloatingPanelForm>
-      </FloatingPanelContent>
-    </FloatingPanelRoot>
+            </FloatingPanelBody>
+            <FloatingPanelFooter>
+              <FloatingPanelCloseButton />
+              <FloatingPanelSubmitButton />
+            </FloatingPanelFooter>
+          </FloatingPanelForm>
+        </FloatingPanelContent>
+      </FloatingPanelRoot>
+      {showMiracleModal && (
+        <MiracleModal
+          text={prayerText}
+          godResponse={godResponse}
+        />
+      )}
+    </>
   )
 }
-
-// export { FloatingPanelInput }

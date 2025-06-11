@@ -21,7 +21,7 @@ export function CreatePrayerModal({id, godName}:{id: string, godName: string}) {
     }
 
     try {
-      await submitMessage(text, nickname, id); // 等待提交成功
+      await submitMessage(text, nickname, id);
       setShowModal(false);
       response = await TalkToGeminiGod(nickname, text, godName);
       setResult(response);

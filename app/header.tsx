@@ -3,9 +3,6 @@
 import { ShimmerButton } from "./card/shimmer-button";
 import { AnimatePresence, motion, MotionProps } from "motion/react";
 import { useEffect, useState } from "react";
-import { usePathname, useSearchParams} from "next/navigation";
-import { CreateGodModal } from "./createGod";
-import { CreatePrayerModal } from "./card/createPrayer";
 import { cn } from "@/lib/utils";
 
 declare global {
@@ -42,9 +39,6 @@ export const Header = function ({
     }
   }, [walletAddress]);
   
-  const isHome = usePathname() == '/';
-  const [godId, godName] = getGodIdAndName(useSearchParams().toString());
-
   const wall = async () => {
     if (typeof window.ethereum === "undefined") {
       alert("请先安装 MetaMask 插件，请安装后刷新页面，并确保 MetaMask 已连接到本地链");
@@ -76,7 +70,6 @@ export const Header = function ({
               `0x...${(storedAddress || walletAddress)?.slice(38)}`,
             ]}
           />
-          {isHome ? <CreateGodModal /> : <CreatePrayerModal id={godId} godName={godName} />}
         </div>
       ) : (
         <ShimmerButton
@@ -131,10 +124,4 @@ function WordRotate({
       </AnimatePresence>
     </div>
   );
-}
-
-function getGodIdAndName(url:string) {
-  if (url.indexOf('data') < 0) return ['', ''];
-
-  return [url.split('%3A')[1].split('%2C')[0], url.split('%3A')[2].split('%2C')[0].replace(/%22/g, '').replace('+', ' ')]
 }
